@@ -5,11 +5,13 @@ import { Repository } from 'typeorm';
 import { CreateAccountInput } from './dtos/create-acount.dto';
 import { LoginInput } from './dtos/login.dto';
 import * as jwt from 'jsonwebtoken';
+import { JwtService } from '../jwt/jwt.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async createAccount({
@@ -56,15 +58,15 @@ export class UsersService {
       const passwordCheck = await user.checkPassword(password);
       if (!passwordCheck) {
         return {
-            ok: false,
-            error: 'Wrong Password',
-        }
+          ok: false,
+          error: 'Wrong Password',
+        };
       }
-      const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY);
+      const token = jwt.sign({ id: user.id }, 'jorge');
       return {
         ok: true,
-        token: 'lalalalala',
-      }
+        token,
+      };
     } catch (error) {
       return {
         ok: false,
